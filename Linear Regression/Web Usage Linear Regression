@@ -1,0 +1,71 @@
+# Load libraries
+import codecademylib3
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+# Read in the data
+website = pd.read_csv('website.csv')
+
+# Print the first five rows
+print(website.head())
+
+# Create a scatter plot of time vs age
+
+plt.scatter(website.age,website.time_seconds)
+# Show then clear plot
+plt.show()
+plt.clf()
+
+# Fit a linear regression to predict time_seconds based on age
+
+model = sm.OLS.from_formula('time_seconds ~ age', website)
+results = model.fit()
+print(results.params)
+# Plot the scatter plot with the line on top
+
+plt.plot(website.age, results.params[1]*website.age+results.params[0] )
+plt.scatter(website.age,website.time_seconds)
+# Show then clear plot
+plt.show()
+plt.clf()
+
+# Calculate fitted values
+fitted_values = results.predict(website)
+# Calculate `residuals` here:
+residuals = website.time_seconds-fitted_values
+# Calculate residuals
+plt.hist(residuals)
+# Check normality assumption
+# Normal
+
+# Show then clear the plot
+plt.show()
+plt.clf()
+
+# Check homoscedasticity assumption
+plt.scatter(fitted_values, residuals)
+
+# Show then clear the plot
+plt.show()
+plt.clf()
+
+# Predict amount of time on website for 40 year old
+new_data={"age":[40]}
+pred_40=results.predict(new_data)
+print(pred_40)
+# Fit a linear regression to predict time_seconds based on the browser
+
+model2 = sm.OLS.from_formula('time_seconds ~ browser', website)
+results2 = model2.fit()
+print("result2",results2.params)
+
+# Calculate and print the group means (for comparison)
+
+print(website.browser.unique())
+
+meansafari=np.mean(website.time_seconds[website.browser=='Safari'])
+meanchrome=np.mean(website.time_seconds[website.browser=='Chrome'])
+diff=meansafari-meanchrome
+print(diff)
